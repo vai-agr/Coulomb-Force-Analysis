@@ -6,15 +6,15 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
 q = 10e-12				#test charge           
-ep_0 = 8.85e-12     #permittivity of vacuum
+ep_0 = 8.85e-12     	#permittivity of vacuum/free space
 R = 10e-9				#length of medium X  between the charges
-r = 10e-9
-k = 1/(4*math.pi*ep_0)
+r = 10e-9				# length of vacuum between the charges	
+k = 1/(4*math.pi*ep_0) 
 
 def dataGenerator():
 	data =np.array([])
-	for Q in np.arange(1,101,1)*1e-12:     #test charge
-		for ep_r in np.arange(1,101,1):    #relative permittivity
+	for Q in np.arange(1,101,1)*1e-12:     
+		for ep_r in np.arange(1,101,1):    
 			force = k*Q*q/((math.sqrt(ep_r)*R+r)**2)
 			data = np.concatenate((data,np.array([Q, 1/ep_r, force])))
 	size = np.size(data)
@@ -41,17 +41,17 @@ def regression(data):
 if __name__ == '__main__':
 	f_Data = dataGenerator()
 	Model  = regression(f_Data)
-	X_eg = np.array([[10e-12,1/50],[20e-12,1/40],[40e-12,1/60],[80e-12,1/20]])  #4 random data points
+	X_eg = np.array([[10e-12,1/25],[20e-12,1/40],[40e-12,1/60],[80e-12,1/20]])  #4 random data points
 	Q_contrib = Model.coef_[0][0]*X_eg[:,0]
 	ep_contrib = Model.coef_[0][1]*X_eg[:,1]
 	print(Q_contrib, ep_contrib)
 	print(Model.predict(X_eg))
 
-	# labels = ['D1','D2','D3','D4']
+	labels = ['D1','D2','D3','D4']
 	
-	# fig,ax = plt.subplots()
+	fig,ax = plt.subplots()
 
-	# ax.bar(labels, Q_contrib, label='charge')
-	# ax.bar(labels, ep_contrib, bottom=Q_contrib, label='permittivity')
-	# ax.legend()
-	# plt.show()
+	ax.bar(labels, Q_contrib, label='charge')
+	ax.bar(labels, ep_contrib, bottom=Q_contrib, label='permittivity')
+	ax.legend()
+	plt.show()
